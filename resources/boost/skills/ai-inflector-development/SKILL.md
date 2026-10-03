@@ -17,14 +17,24 @@ Use this skill when a Laravel application needs to integrate the Ai Inflector pa
 
 ## Workflow
 
-### 1. Inspect the Laravel app context
+### 1. Configure the package
 
-- confirm the app is a Laravel project
-- inspect the target code paths where the package should be applied
+- install `frank-l93/ai-inflector` with Composer
+- set `GEMINI_API_KEY` and optionally `AI_INFLECTOR_LOCALE` or `GEMINI_INFLECTOR_MODEL`
+- publish `ai-inflector-config` only when the application's config file needs customization
 
-### 2. Apply the package's public API
+### 2. Inflect words
 
-Use the package's inflection API where words need localized singular or plural forms. Cached results can be removed with:
+Use the facade for plural or singular forms:
+
+```php
+use AiInflector\AiInflector\Facades\AiInflector;
+
+$plural = AiInflector::plural('computer', 2, 'nl');
+$singular = AiInflector::singular('computers', 'nl');
+```
+
+The `ai-inflector:inflect` command can also inflect a word from the terminal. Cached results can be removed with:
 
 ```bash
 php artisan ai-inflector:cache:clear
@@ -38,6 +48,8 @@ Read before executing:
 
 ## Examples
 
+- use the facade for application code that needs plural or singular word forms
+- run `php artisan ai-inflector:inflect computer --type=plural --locale=nl` for a one-off inflection
 - clear stale inflection results without flushing the application's Laravel cache
 
 ## Anti-patterns

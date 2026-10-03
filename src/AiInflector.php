@@ -19,10 +19,16 @@ class AiInflector
 
     protected string $locale;
 
+    protected string $model;
+
     public function __construct(?string $apiKey = null, ?string $locale = null)
     {
-        $this->apiKey = $apiKey ?? config('ai-inflector.api_key', '');
+        $configuredApiKey = config('ai-inflector.drivers.gemini.api_key');
+        $configuredModel = config('ai-inflector.drivers.gemini.model', 'gemini-2.0-flash');
+
+        $this->apiKey = $apiKey ?? (is_string($configuredApiKey) ? $configuredApiKey : '');
         $this->locale = $locale ?? config('ai-inflector.default_locale', 'nl');
+        $this->model = is_string($configuredModel) ? $configuredModel : 'gemini-2.0-flash';
     }
 
     /**
@@ -97,14 +103,14 @@ class AiInflector
     protected function fetchFromAi(string $word, string $targetForm, string $locale): string
     {
         if (empty($this->apiKey)) {
-            return Str::plural($word);
+            return $this->fallback($word, $targetForm);
         }
 
         try {
             $prompt = "Return ONLY the exact {$targetForm} form of the {$locale} word '{$word}'. Do not include punctuation, markdown, articles (like 'de' or 'het'), or explanations. Lowercase only.";
 
             $response = Http::withHeaders(['Content-Type' => 'application/json'])
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$this->apiKey}", [
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}", [
                     'contents' => [
                         ['parts' => [['text' => $prompt]]],
                     ],
@@ -123,6 +129,11 @@ class AiInflector
             // Optionally log the error
         }
 
-        return Str::plural($word);
+        return $this->fallback($word, $targetForm);
+    }
+
+    protected function fallback(string $word, string $targetForm): string
+    {
+        return $targetForm === 'singular' ? Str::singular($word) : Str::plural($word);
     }
 }

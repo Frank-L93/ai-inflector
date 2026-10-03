@@ -11,5 +11,5 @@ it('registers the inflector as a singleton', function () {
 
 it('merges the package defaults into application config', function () {
     expect(config('ai-inflector.default_locale'))->toBe('nl')
-        ->and(config('ai-inflector.cache.prefix'))->toBe('ai_inflector_');
+        ->and(config('ai-inflector.drivers.gemini.model'))->toBe('gemini-2.0-flash');
 });

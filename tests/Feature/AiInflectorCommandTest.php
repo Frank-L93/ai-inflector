@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 it('runs the inflect command using the default plural type and locale', function () {
     config([
-        'ai-inflector.api_key' => 'test-key',
+        'ai-inflector.drivers.gemini.api_key' => 'test-key',
         'ai-inflector.default_locale' => 'nl',
     ]);
     Http::fake([
@@ -23,7 +23,7 @@ it('runs the inflect command using the default plural type and locale', function
 });
 
 it('runs the inflect command with the singular type and requested locale', function () {
-    config(['ai-inflector.api_key' => 'test-key']);
+    config(['ai-inflector.drivers.gemini.api_key' => 'test-key']);
     Http::fake([
         'generativelanguage.googleapis.com/*' => Http::response([
             'candidates' => [['content' => ['parts' => [['text' => 'computer']]]]],

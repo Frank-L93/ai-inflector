@@ -44,6 +44,27 @@ it('returns a trimmed lowercase plural from the AI response', function () {
     );
 });
 
+it('uses the configured Gemini key and model', function () {
+    config([
+        'ai-inflector.drivers.gemini.api_key' => 'configured-key',
+        'ai-inflector.drivers.gemini.model' => 'gemini-test-model',
+    ]);
+    Http::fake([
+        'generativelanguage.googleapis.com/*' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'computers']],
+                ],
+            ]],
+        ]),
+    ]);
+
+    expect((new AiInflector)->plural('computer'))->toBe('computers');
+
+    Http::assertSent(fn (ClientRequest $request): bool => str_contains($request->url(), 'models/gemini-test-model:generateContent?key=configured-key'),
+    );
+});
+
 it('caches a successful plural response', function () {
     Http::fake([
         'generativelanguage.googleapis.com/*' => Http::response([
@@ -107,6 +128,14 @@ it('falls back to Laravel pluralization when the API request fails', function ()
     ]);
 
     expect((new AiInflector('test-key', 'nl'))->plural('computer'))->toBe(Str::plural('computer'));
+});
+
+it('falls back to Laravel singularization when no API key is configured', function () {
+    Http::fake();
+
+    expect((new AiInflector('', 'nl'))->singular('computers'))->toBe(Str::singular('computers'));
+
+    Http::assertNothingSent();
 });
 
 it('returns the original word when a successful response has no text', function () {
