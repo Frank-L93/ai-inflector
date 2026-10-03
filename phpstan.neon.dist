@@ -6,3 +6,4 @@ parameters:
     configDirectories:
         - config
     tmpDir: build/phpstan
+    treatPhpDocTypesAsCertain: false
