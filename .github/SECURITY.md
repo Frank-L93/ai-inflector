@@ -8,4 +8,4 @@ Only the latest major version receives security fixes.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within Ai Inflector, please send an email to Frank-L93 at frank@franklambregts.com. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Ai Inflector, please send an email to Frank Lambregts at web@franklambregts.com. All security vulnerabilities will be promptly addressed.
